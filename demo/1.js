@@ -52,6 +52,45 @@
 }
 
 {
+  function myInstanceof(left, right) {
+    // 获取对象的原型
+    let proto = Object.getPrototypeOf(left);
+    // 获取构造函数的 prototype 对象
+    let prototype = right.prototype;
+
+    // 判断构造函数的 prototype 对象是否在对象的原型链上
+    while (true) {
+      if (!proto) return false;
+      if (proto === prototype) return true;
+      // 如果没有找到，就继续从其原型上找，Object.getPrototypeOf方法用来获取指定对象的原型
+      proto = Object.getPrototypeOf(proto);
+    }
+  }
+  const left = new Number(1);
+  const right = Array;
+  // console.log(myInstanceof(left, right));
+}
+
+{
+  const fn = () => {
+    const a = new Number(1);
+    console.log(1, Number);
+    console.log(2, Number.prototype);
+    console.log(3, Number.__proto__);
+
+    console.log(4, Number.prototype === a.__proto__);
+    console.log(5, Number.__proto__ === Function.prototype);
+
+    console.log(6, Function);
+    console.log(7, Number.__proto__ === Function.prototype);
+    console.log(8, Function.__proto__ === Function.prototype);
+
+    console.log(9, Function.prototype);
+  };
+  // fn();
+}
+
+{
   // var 对象 = new 函数()
   // 对象.__proto__ === 函数.prototype
 
@@ -99,20 +138,115 @@
     // 注意看题，反向思考，左右互换
     if (Object.prototype === Object.getPrototypeOf(obj1)) console.log(9);
 
-    console.log(Number); // ƒ Number() { [native code] }
-    console.log(typeof Number);
-    console.log(String); // ƒ String() { [native code] }
-    console.log(typeof String);
-    console.log(Boolean); // ƒ Boolean() { [native code] }
-    console.log(typeof Boolean);
-    console.log(Object); // ƒ Object() { [native code] }
-    console.log(typeof Object); // function
-
-    console.log(Array); // ƒ Array() { [native code] }
-    console.log(typeof Array); // function
-    console.log(Function); // ƒ Function() { [native code] }
-    console.log(typeof Function); // function
-
+    // 原型都有toString valueOf方法
+    console.log(
+      Number,
+      typeof Number,
+      Object.getPrototypeOf(Number) === Function.prototype
+    ); // ƒ Number() { [native code] }
+    console.log(new Number(1).__proto__);
+    // constructor: ƒ Number()
+    // toExponential: ƒ toExponential()
+    // toFixed: ƒ toFixed()
+    // toLocaleString: ƒ toLocaleString()
+    // toPrecision: ƒ toPrecision()
+    // toString: ƒ toString()
+    // valueOf: ƒ valueOf()
+    // [[Prototype]]: Object
+    // [[PrimitiveValue]]: 0
+    console.log(String, typeof String, String.__proto__); // ƒ String() { [native code] }
+    console.log(new String("abc").__proto__);
+    // charAt: ƒ charAt()
+    // concat: ƒ concat()
+    // constructor: ƒ String()
+    // fixed: ƒ fixed()
+    // includes: ƒ includes()
+    // indexOf: ƒ indexOf()
+    // length: 0
+    // repeat: ƒ repeat()
+    // replace: ƒ replace()
+    // search: ƒ search()
+    // slice: ƒ slice()
+    // split: ƒ split()
+    // startsWith: ƒ startsWith()
+    // strike: ƒ strike()
+    // sub: ƒ sub()
+    // substr: ƒ substr()
+    // toLocaleLowerCase: ƒ toLocaleLowerCase()
+    // toLowerCase: ƒ toLowerCase()
+    // toString: ƒ toString()
+    // trim: ƒ trim()
+    // trimEnd: ƒ trimEnd()
+    // valueOf: ƒ valueOf()
+    // Symbol(Symbol.iterator): ƒ [Symbol.iterator]()
+    // [[Prototype]]: Object
+    // [[PrimitiveValue]]: ""
+    console.log(Boolean, typeof Boolean, Boolean.__proto__); // ƒ Boolean() { [native code] }
+    console.log(new Boolean(true).__proto__);
+    // constructor: ƒ Boolean()
+    // toString: ƒ toString()
+    // valueOf: ƒ valueOf()
+    // [[Prototype]]: Object
+    // [[PrimitiveValue]]: false
+    console.log(Object, typeof Object, Object.__proto__); // ƒ Object() { [native code] }
+    console.log(new Object({}).__proto__); // function
+    // constructor: ƒ Object()
+    // hasOwnProperty: ƒ hasOwnProperty()
+    // isPrototypeOf: ƒ isPrototypeOf()
+    // propertyIsEnumerable: ƒ propertyIsEnumerable()
+    // toLocaleString: ƒ toLocaleString()
+    // toString: ƒ toString()
+    // valueOf: ƒ valueOf()
+    // __defineGetter__: ƒ __defineGetter__()
+    // __defineSetter__: ƒ __defineSetter__()
+    // __lookupGetter__: ƒ __lookupGetter__()
+    // __lookupSetter__: ƒ __lookupSetter__()
+    // __proto__: (...)
+    // get __proto__: ƒ __proto__()
+    // set __proto__: ƒ __proto__()
+    console.log(Array, typeof Array, Array.__proto__); // ƒ Array() { [native code] }
+    console.log([1, 2].__proto__); // function
+    // at: ƒ at()
+    // concat: ƒ concat()
+    // constructor: ƒ Array()
+    // copyWithin: ƒ copyWithin()
+    // entries: ƒ entries()
+    // every: ƒ every()
+    // fill: ƒ fill()
+    // filter: ƒ filter()
+    // find: ƒ find()
+    // findIndex: ƒ findIndex()
+    // findLast: ƒ findLast()
+    // findLastIndex: ƒ findLastIndex()
+    // flat: ƒ flat()
+    // flatMap: ƒ flatMap()
+    // forEach: ƒ forEach()
+    // includes: ƒ includes()
+    // indexOf: ƒ indexOf()
+    // join: ƒ join()
+    // keys: ƒ keys()
+    // lastIndexOf: ƒ lastIndexOf()
+    // length: 0
+    // map: ƒ map()
+    // pop: ƒ pop()
+    // push: ƒ push()
+    // reduce: ƒ reduce()
+    // reduceRight: ƒ reduceRight()
+    // reverse: ƒ reverse()
+    // shift: ƒ shift()
+    // slice: ƒ slice()
+    // some: ƒ some()
+    // sort: ƒ sort()
+    // splice: ƒ splice()
+    // toLocaleString: ƒ toLocaleString()
+    // toString: ƒ toString()
+    // unshift: ƒ unshift()
+    // values: ƒ values()
+    // Symbol(Symbol.iterator): ƒ values()
+    // Symbol(Symbol.unscopables): {copyWithin: true, entries: true, fill: true, find: true, findIndex: true, …}
+    // [[Prototype]]: Object
+    console.log(Function, typeof Function, Function.__proto__); // ƒ Function() { [native code] }
+    console.log(F.__proto__); // ƒ () { [native code] }
     if (Array.__proto__ === Function.prototype) console.log(2); // Array/Number/String/Boolean/Function/Object都一样
     console.log(true.__proto__); // Boolean {false, constructor: ƒ, toString: ƒ, valueOf: ƒ}
     console.log({}.__proto__); // {constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …}
@@ -120,5 +254,59 @@
     console.log([].__proto__); // [constructor: ƒ, concat: ƒ, copyWithin: ƒ, fill: ƒ, find: ƒ, …]
     console.log("".__proto__); // String {'', constructor: ƒ, anchor: ƒ, big: ƒ, blink: ƒ, …}
   };
-  fn();
+  // fn();
+}
+
+{
+  const fn = () => {
+    let a = 0.1;
+    let b = 0.2;
+    console.log(a + b);
+    const precisionRound = (value, decimals) => {
+      console.log(`${value}e${decimals}`);
+      return Number(`${Math.round(`${value}e${decimals}`)}e-${decimals}`);
+    };
+    const res = precisionRound(0.1 + 0.2, 2);
+    console.log(res);
+  };
+  // fn();
+}
+{
+  const fn = () => {
+    let a = isNaN("1");
+    let b = Number.isNaN("1");
+    console.log(a);
+    console.log(b);
+
+    // a&&b a||b 返回的是第一个或者第二个的值，不是判断条件结果（true或者false）
+    const c = null && 11;
+    const d = 11 && 22;
+    const e = 33 || -1;
+    const f = null || 44;
+    const g = (a = 1) && (b = "b");
+    console.log(c, d, e, f, g, b);
+  };
+  // fn();
+}
+
+{
+  function fn() {
+    var id = "Global";
+    let fun1 = () => {
+      console.log(arguments); // 1
+      console.log(this.id);
+    };
+    fun1(); // 'Global'
+    fun1.call({ id: "Obj" }); // 'Global'
+    fun1.apply({ id: "Obj" }); // 'Global'
+    fun1.bind({ id: "Obj" })(); // 'Global'
+  }
+  // fn(1);
+}
+
+{
+  let a = [1, 2, 3];
+  let fn = (a, b, c) => a + b + c;
+  // 将数组转换为参数序列，对象不可以
+  console.log(fn(...a));
 }

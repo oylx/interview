@@ -66,6 +66,7 @@
       proto = Object.getPrototypeOf(proto);
     }
   }
+
   const left = new Number(1);
   const right = Array;
   // console.log(myInstanceof(left, right));
@@ -301,12 +302,117 @@
     fun1.apply({ id: "Obj" }); // 'Global'
     fun1.bind({ id: "Obj" })(); // 'Global'
   }
+
   // fn(1);
 }
 
 {
   let a = [1, 2, 3];
-  let fn = (a, b, c) => a + b + c;
+  let fn = (a, b, c) => {
+    // Rest element must be last element
+    // const [first, ...rest] = [1, 2, 3, 4, 5];
+    const [first, , , rest] = [1, 2, 3, 4];
+    console.log(first, rest);
+    return a + b + c;
+  };
   // 将数组转换为参数序列，对象不可以
-  console.log(fn(...a));
+  // console.log(fn(...a));
+}
+
+{
+  let onWatch = (obj, setBind, getLogger) => {
+    let handler = {
+      get(target, property, receiver) {
+        getLogger(target, property);
+        return Reflect.get(target, property, receiver);
+      },
+      set(target, property, value, receiver) {
+        setBind(value, property);
+        return Reflect.set(target, property, value);
+      },
+    };
+    return new Proxy(obj, handler);
+  };
+  let obj = { a: 1 };
+  let p = onWatch(
+    obj,
+    (v, property) => {
+      console.log(`监听到属性${property}改变为${v}`);
+    },
+    (target, property) => {
+      console.log(`'${property}' = ${target[property]}`);
+    }
+  );
+  // p.a = 2; // 监听到属性a改变2
+  // console.log(p.a); // 'a' = 2
+}
+
+{
+  function objectFactory() {
+    let newObject = null;
+    let constructor = [].shift.call(arguments);
+    let result = null;
+    // 判断参数是否是一个函数
+    if (typeof constructor !== "function") {
+      console.error("type error");
+      return;
+    }
+    // 1.新建一个空对象，2.对象的原型为构造函数的 prototype 对象
+    newObject = Object.create(constructor.prototype);
+    // 3.将 this 指向新建对象，并执行函数
+    result = constructor.apply(newObject, arguments);
+    debugger;
+    // 4.判断返回对象,返回结果
+    let flag =
+      result && (typeof result === "object" || typeof result === "function");
+    return flag ? result : newObject;
+  }
+
+  // 使用方法
+  function fn() {
+    console.log(arguments);
+    return [...arguments].reduce((prev, next) => prev + next, 0);
+  }
+
+  // const res = objectFactory(fn, [1,2,3]);
+  // console.log(res)
+}
+
+{
+  const m1 = new Map();
+  m1.set("a", 1);
+  m1.set("四", 2);
+  m1.set("1", 3);
+  m1.set(null, 4);
+  console.log(m1);
+
+  const o1 = new Object({ a: 1, 四: 2, 1: 3 });
+  console.log(o1); // {1: 3, a: 1, 四: 2}
+
+  // Object.keys()---无序？
+  // 首先遍历所有数值键，按照数值升序排列。--- 数值只对非负整数
+  // 其次遍历所有字符串键，按照加入时间升序排列。
+  // 最后遍历所有 Symbol 键，按照加入时间升序排列。
+  var origin_obj = { 1: "a", 四: "d", a: "e", 2: "b", 3: "c" };
+  var origin_keys = Object.keys(origin_obj);
+  console.log(origin_keys); // ['1', '2', '3', '四', 'a']
+
+  var origin_obj = { a: "e", 2: "b", 1: "a", 四: "d", 3: "c" };
+  var origin_keys = Object.keys(origin_obj);
+  console.log(origin_keys); // ['1', '2', '3', 'a', '四']
+
+  var s = Symbol("hh");
+  var origin_obj = {
+    s: "1",
+    "-4": "负数3",
+    a: "e",
+    2: "b",
+    1: "a",
+    四: "d",
+    "-1": "负数2",
+    "-2": "负数",
+    3: "c",
+  };
+  var origin_keys = Object.keys(origin_obj);
+  console.log(origin_keys); // ['1', '2', '3', '-4', 'a', '四', '-1', '-2']
 }

@@ -940,7 +940,7 @@ p.a; // 'a' = 2
 const [a, b, c] = [1, 2, 3];
 ```
 
-最终，a、b、c 分别被赋予了数组第 0、1、2 个索引位的值： ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e55fc36b191340e69698782fbd67ef4f~tplv-k3u1fbpfcp-watermark.awebp) 数组里的 0、1、2 索引位的元素值，精准地被映射到了左侧的第 0、1、2 个变量里去，这就是数组解构的工作模式。还可以通过给左侧变量数组设置空占位的方式，实现对数组中某几个元素的精准提取：
+最终，a、b、c 分别被赋予了数组第 0、1、2 个索引位的值： ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e55fc36b191340e69698782fbd67ef4f~tplv-k3u1fbpfcp-watermark.awebp) 数组里的 0、1、2 索引位的元素值，精准地被映射到了左侧的第 0、1、2 个变量里去，这就是数组解构的工作模式。还可以通过给左侧变量数组设置空占位的方式，实现对数组中某几个元素的精准提取：
 
 ```javascript
 const [a, , c] = [1, 2, 3];

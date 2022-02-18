@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+  function ready() {
+    console.log('DOM is ready');
+
+    // 图片目前尚未加载完成（除非已经被缓存），所以图片的大小为 0x0
+    console.log(`Image size: ${img.offsetWidth}x${img.offsetHeight}`);
+  }
+
+  document.addEventListener("DOMContentLoaded", ready);
+</script>
+
+<body>
+  <div></div>
+<img id="img" src="https://en.js.cx/clipart/train.gif?speed=1&cache=0">
+  
+</body>
+</html>

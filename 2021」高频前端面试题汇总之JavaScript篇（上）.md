@@ -1329,6 +1329,7 @@ JSON 是一种基于文本的轻量级的数据交换格式。它可以被任何
 - **动态创建 DOM 方式：** 动态创建 DOM 标签的方式，可以对文档的加载事件进行监听，当文档加载完成后再动态的创建 script 标签来引入 js 脚本。
 - **使用 setTimeout 延迟方法：** 设置一个定时器来延迟加载 js 脚本文件
 - **让 JS 最后加载：** 将 js 脚本放在文档的底部，来使 js 脚本尽可能的在最后来加载执行。
+- ![图片描述](https://segmentfault.com/img/bVCBBR)
 
 ### 8. JavaScript 类数组对象的定义？
 
@@ -1864,6 +1865,21 @@ console.log(i); // 11
 
 ### 19. **ES6**模块与**CommonJS**模块有什么异同？
 
+## ES6
+
+1. ES6模块中的值属于动态只读引用。
+2. 对于只读来说，即不允许修改引入变量的值，import的变量是只读的，不论是基本数据类型还是复杂数据类型。当模块遇到import命令时，就会生成一个只读引用。等到脚本真正执行时，再根据这个只读引用，到被加载的那个模块里面去取值。
+3. 对于动态来说，原始值发生变化，import加载的值也会发生变化。不论是基本数据类型还是复杂数据类型。
+4. 循环加载时，ES6模块是动态引用。只要两个模块之间存在某个引用，代码就能够执行。
+
+## CommonJS
+
+1. 对于基本数据类型，属于复制。即会被模块缓存。同时，在另一个模块可以对该模块输出的变量重新赋值。
+2. 对于复杂数据类型，属于浅拷贝。由于两个模块引用的对象指向同一个内存空间，因此对该模块的值做修改时会影响另一个模块。
+3. 当使用require命令加载某个模块时，就会运行整个模块的代码。
+4. 当使用require命令加载同一个模块时，不会再执行该模块，而是取到缓存之中的值。也就是说，CommonJS模块无论加载多少次，都只会在第一次加载时运行一次，以后再加载，就返回第一次运行的结果，除非手动清除系统缓存。
+5. 当循环加载时，脚本代码在require的时候，就会全部执行。一旦出现某个模块被"循环加载"，就只输出已经执行的部分，还未执行的部分不会输出。
+
 ES6 Module 和 CommonJS 模块的区别：
 
 - CommonJS 是对模块的浅拷⻉，ES6 Module 是对模块的引⽤，即 ES6 Module 只存只读，不能改变其值，也就是指针指向不能变，类似 const；
@@ -2225,7 +2241,9 @@ Person.prototype.constructor; // Person
 
 ### 4. 原型链的终点是什么？如何打印出原型链的终点？
 
-由于`Object`是构造函数，原型链终点是`Object.prototype.__proto__`，而`Object.prototype.__proto__=== null // true`，所以，原型链的终点是`null`。原型链上的所有原型都是对象，所有的对象最终都是由`Object`构造的，而`Object.prototype`的下一级是`Object.prototype.__proto__`。 ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/30821909377545248d244b0a4e965bb1~tplv-k3u1fbpfcp-watermark.awebp)
+由于`Object`是构造函数，原型链终点是`Object.prototype.__proto__`，而`Object.prototype.__proto__=== null // true`，所以，原型链的终点是`null`。原型链上的所有原型都是对象，所有的对象最终都是由`Object`构造的，而`Object.prototype`的下一级是`Object.prototype.__proto__`。 
+
+![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/30821909377545248d244b0a4e965bb1~tplv-k3u1fbpfcp-watermark.awebp)
 
 ### 5. 如何获得对象非原型链上的属性？
 
@@ -2413,8 +2431,3 @@ first();
 - 函数上下文：变量定义，函数声明，`this`，`arguments`
 
 **注：** 由于字数限制，剩余内容在下篇进行总结哦。
-
-作者：CUGGZ
-链接：https://juejin.cn/post/6940945178899251230
-来源：稀土掘金
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。

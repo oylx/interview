@@ -139,7 +139,7 @@
     // 注意看题，反向思考，左右互换
     if (Object.prototype === Object.getPrototypeOf(obj1)) console.log(9);
 
-    // 原型都有toString valueOf方法
+    // 原型链的尽头一般来说都是 Object.prototype,所以原型都有toString valueOf方法
     console.log(
       Number,
       typeof Number,
@@ -379,40 +379,119 @@
 }
 
 {
-  const m1 = new Map();
-  m1.set("a", 1);
-  m1.set("四", 2);
-  m1.set("1", 3);
-  m1.set(null, 4);
-  console.log(m1);
+  const fn = () => {
+    const m1 = new Map();
+    m1.set("a", 1);
+    m1.set("四", 2);
+    m1.set("1", 3);
+    m1.set(null, 4);
+    console.log(m1);
 
-  const o1 = new Object({ a: 1, 四: 2, 1: 3 });
-  console.log(o1); // {1: 3, a: 1, 四: 2}
+    const o1 = new Object({ a: 1, 四: 2, 1: 3 });
+    console.log(o1); // {1: 3, a: 1, 四: 2}
 
-  // Object.keys()---无序？
-  // 首先遍历所有数值键，按照数值升序排列。--- 数值只对非负整数
-  // 其次遍历所有字符串键，按照加入时间升序排列。
-  // 最后遍历所有 Symbol 键，按照加入时间升序排列。
-  var origin_obj = { 1: "a", 四: "d", a: "e", 2: "b", 3: "c" };
-  var origin_keys = Object.keys(origin_obj);
-  console.log(origin_keys); // ['1', '2', '3', '四', 'a']
+    // Object.keys()---无序？
+    // 首先遍历所有数值键，按照数值升序排列。--- 数值只对非负整数
+    // 其次遍历所有字符串键，按照加入时间升序排列。
+    // 最后遍历所有 Symbol 键，按照加入时间升序排列。
+    var origin_obj = { 1: "a", 四: "d", a: "e", 2: "b", 3: "c" };
+    var origin_keys = Object.keys(origin_obj);
+    console.log(origin_keys); // ['1', '2', '3', '四', 'a']
 
-  var origin_obj = { a: "e", 2: "b", 1: "a", 四: "d", 3: "c" };
-  var origin_keys = Object.keys(origin_obj);
-  console.log(origin_keys); // ['1', '2', '3', 'a', '四']
+    var origin_obj = { a: "e", 2: "b", 1: "a", 四: "d", 3: "c" };
+    var origin_keys = Object.keys(origin_obj);
+    console.log(origin_keys); // ['1', '2', '3', 'a', '四']
 
-  var s = Symbol("hh");
-  var origin_obj = {
-    s: "1",
-    "-4": "负数3",
-    a: "e",
-    2: "b",
-    1: "a",
-    四: "d",
-    "-1": "负数2",
-    "-2": "负数",
-    3: "c",
+    var s = Symbol("hh");
+    var origin_obj = {
+      s: "1",
+      "-4": "负数3",
+      a: "e",
+      2: "b",
+      1: "a",
+      四: "d",
+      "-1": "负数2",
+      "-2": "负数",
+      3: "c",
+    };
+    var origin_keys = Object.keys(origin_obj);
+    console.log(origin_keys); // ['1', '2', '3', '-4', 'a', '四', '-1', '-2']
   };
-  var origin_keys = Object.keys(origin_obj);
-  console.log(origin_keys); // ['1', '2', '3', '-4', 'a', '四', '-1', '-2']
+  // fn();
+}
+
+{
+  const fn = () => {
+    var obj = {
+      0: "one",
+      1: "two",
+      length: 2,
+    };
+    obj = Array.from(obj);
+    for (var k of obj) {
+      console.log(k);
+    }
+    var obj = {
+      a: 1,
+      b: 2,
+      c: 3,
+    };
+
+    obj[Symbol.iterator] = function () {
+      var keys = Object.keys(this);
+      var count = 0;
+      return {
+        next() {
+          if (count < keys.length) {
+            return { value: obj[keys[count++]], done: false };
+          } else {
+            return { value: undefined, done: true };
+          }
+        },
+      };
+    };
+
+    for (var k of obj) {
+      console.log(k);
+    }
+
+    var obj = {
+      a: 1,
+      b: 2,
+      c: 3,
+    };
+    obj[Symbol.iterator] = function* () {
+      var keys = Object.keys(obj);
+      for (var k of keys) {
+        yield [k, obj[k]];
+      }
+    };
+
+    for (var [k, v] of obj) {
+      console.log(k, v);
+    }
+  };
+  // fn();
+}
+
+{
+  function Person(name) {
+    this.name = name;
+  }
+  // 修改原型
+  Person.prototype.getName = function () {};
+  var p = new Person("hello");
+  console.log(p.__proto__ === p.constructor.prototype); // true
+  console.log(p.constructor); // ƒ Person(name) {this.name = name;}
+  console.log(p.constructor.prototype); // {getName: ƒ, constructor: ƒ}
+  console.log(Person.prototype); // {getName: ƒ, constructor: ƒ}
+  // 重写原型
+  // 直接给 Person 的原型对象直接用对象赋值时，它的构造函数指向的了根构造函数 Object，
+  // 所以这时候`p.constructor === Object` ，而不是`p.constructor === Person`。要想成立，就要用 constructor 指回来
+  Person.prototype = {
+    getName: function () {},
+  };
+  var p = new Person("hello");
+  console.log(p.__proto__ === Person.prototype); // true
+  console.log(p.__proto__ === p.constructor.prototype); // false
 }

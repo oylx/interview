@@ -28,7 +28,7 @@
     console.log(this.name + "1");
   }
 
-  let fn = fn1.myCall(obj, 1);
+  // let fn = fn1.myCall(obj, 1);
 
   Function.prototype.myBind = function (context) {
     // 判断调用对象是否为函数
@@ -86,7 +86,7 @@
   因为 Object(null) 是 {}，所以也可以支持）*/
 
   var axisPoint = new YAxisPoint(5);
-  console.log(axisPoint.toString()); // '0,5'
+  axisPoint.toString(); // '0,5'
 
   axisPoint instanceof Point; // true
   axisPoint instanceof YAxisPoint; // true
@@ -97,96 +97,144 @@
   async function func1() {
     return 111;
   }
-  console.log(
-    func1().then((res) => {
-      console.log(res);
-    })
-  );
+  const fn = () => {
+    console.log(
+      func1().then((res) => {
+        console.log(res);
+      })
+    );
+  };
+  // fn();
 }
 
 {
-  Promise.resolve('"我错了,请原谅俺!!!"').then((res) => {
-    console.log(res);
-  });
-  Promise.reject("第二次犯错")
-    .then(
-      (res) => {
-        console.log("success", res);
-      },
-      (res) => {
-        console.log("error", res);
-      }
-    )
-    .catch((err) => {
-      console.log(err);
-    });
-
-  function testPromise(ready) {
-    return new Promise(function (resolve, reject) {
-      if (ready) {
-        resolve("hello world");
-      } else {
-        reject("No thanks");
-      }
-    });
-  }
   // 方法调用
-  testPromise(false).then(
-    function (msg) {
-      console.log(msg);
-    },
-    function (error) {
-      console.log(error);
-    }
-  );
-}
-
-{
-  let promise1 = new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(1);
-    }, 2000);
-  });
-  let promise2 = new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(2);
-    }, 1000);
-  });
-  let promise3 = new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(3);
-    }, 3000);
-  });
-  Promise.all([promise1, promise2, promise3]).then((res) => {
-    console.log(res);
-    //结果为：[1,2,3]
-  });
-}
-
-{
-  let promise1 = new Promise((resolve, reject) => {
-    setTimeout(() => {
-      reject(1);
-    }, 2000);
-  });
-  let promise2 = new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(2);
-    }, 1000);
-  });
-  let promise3 = new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(3);
-    }, 3000);
-  });
-  Promise.race([promise1, promise2, promise3]).then(
-    (res) => {
+  const fn = () => {
+    Promise.resolve('"我错了,请原谅俺!!!"').then((res) => {
       console.log(res);
-      //结果：2
-    },
-    (rej) => {
-      console.log(rej);
+    });
+    Promise.reject("第二次犯错")
+      .then(
+        (res) => {
+          console.log("success", res);
+        },
+        (res) => {
+          console.log("error", res);
+        }
+      )
+      .catch((err) => {
+        console.log(err);
+      });
+
+    function testPromise(ready) {
+      return new Promise(function (resolve, reject) {
+        if (ready) {
+          resolve("hello world");
+        } else {
+          reject("No thanks");
+        }
+      });
     }
-  );
-  Promise.race([promise1, timeOutPromise(5000)]).then((res) => {});
+    testPromise(false).then(
+      function (msg) {
+        console.log(msg);
+      },
+      function (error) {
+        console.log(error);
+      }
+    );
+  };
+  // fn();
+}
+
+{
+  const fn = () => {
+    let promise1 = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(1);
+      }, 2000);
+    });
+    let promise2 = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(2);
+      }, 1000);
+    });
+    let promise3 = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(3);
+      }, 3000);
+    });
+    Promise.all([promise1, promise2, promise3]).then((res) => {
+      console.log(res);
+    });
+  };
+  // fn();
+}
+
+{
+  const fn = () => {
+    let promise1 = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve("promise1");
+      }, 1000);
+    });
+    let promise2 = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve("promise2");
+      }, 2000);
+    });
+    let promise3 = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve("promise3");
+      }, 3000);
+    });
+    // Promise.race([promise1, promise2, promise3])
+    //   .then(
+    //     (res) => {
+    //       console.log(res);
+    //     },
+    //     (rej) => {
+    //       console.log(rej);
+    //     }
+    //   )
+    //   .catch((v) => {
+    //     console.log(v);
+    //   });
+    function timeOutPromise(time) {
+      setTimeout(() => {
+        return Promise.resolve("race");
+      }, time);
+    }
+    let timeOutPromise1 = (time) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          Resolve("timeOutPromise1");
+        }, time);
+      });
+    };
+    Promise.race([promise1, timeOutPromise1(5000)]).then((res) => {
+      console.log(res);
+    });
+  };
+  // fn();
+}
+{
+  const input = document.querySelector("input");
+  const inputAll = document.querySelectorAll("input");
+  console.log(input, inputAll);
+}
+{
+  Promise.resolve().then(() => {
+    console.log("promise1");
+    const timer2 = setTimeout(() => {
+      console.log("timer2");
+    }, 0);
+  });
+  const timer1 = setTimeout(() => {
+    console.log("timer1");
+    Promise.resolve().then(() => {
+      console.log("promise2");
+    });
+  }, 0);
+  console.log("start");
 }

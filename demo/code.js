@@ -544,16 +544,6 @@
 }
 
 {
-  function jsonToTree(data) {
-    const tree = [];
-    data.forEach(({ id, pid, name }) => {
-      if (id === 1) {
-        tree.push({ id, pid, name, children: [] });
-      }
-      tree.push({ id, pid, name, children: [] });
-    });
-  }
-  const res = jsonToTree(source);
   // 转换前：
   const source = [
     { id: 1, pid: 0, name: "body" },
@@ -582,4 +572,344 @@
       ],
     },
   ];
+
+  function jsonToTree(data) {
+    let result = [];
+    if (!Array.isArray(data)) {
+      return result;
+    }
+    let map = {};
+    data.forEach((item) => {
+      map[item.id] = item;
+    });
+    data.forEach((item) => {
+      let parent = map[item.pid];
+      if (parent) {
+        (parent.children || (parent.children = [])).push(item);
+      } else {
+        result.push(item);
+      }
+    });
+    return result;
+  }
+
+  const res = jsonToTree(source);
+  console.log(res);
+}
+
+{
+  let url =
+    "http://www.domain.com/?user=anonymous&id=123&id=456&city=%E5%8C%97%E4%BA%AC&enabled";
+  parseParam(url);
+  /* 结果
+  { user: 'anonymous',
+    id: [ 123, 456 ], // 重复出现的 key 要组装成数组，能被转成数字的就转成数字类型
+    city: '北京', // 中文需解码
+    enabled: true, // 未指定值得 key 约定为 true
+  }
+  */
+
+  /**
+   * 解析 URL Params 为对象
+   * @param {*} url
+   * @returns
+   */
+  function parseParam(url) {
+    const paramsStr = /.+\?(.+)$/.exec(url)[1]; // 将 ? 后面的字符串取出来
+    const paramsArr = paramsStr.split("&"); // 将字符串以 & 分割后存到数组中
+    let paramsObj = {};
+    // 将 params 存到对象中
+    paramsArr.forEach((param) => {
+      if (/=/.test(param)) {
+        // 处理有 value 的参数
+        let [key, val] = param.split("="); // 分割 key 和 value
+        val = decodeURIComponent(val); // 解码
+        val = /^\d+$/.test(val) ? parseFloat(val) : val; // 判断是否转为数字
+        if (paramsObj.hasOwnProperty(key)) {
+          // 如果对象有 key，则添加一个值
+          paramsObj[key] = [].concat(paramsObj[key], val);
+        } else {
+          // 如果对象没有这个 key，创建 key 并设置值
+          paramsObj[key] = val;
+        }
+      } else {
+        // 处理没有 value 的参数
+        paramsObj[param] = true;
+      }
+    });
+    return paramsObj;
+  }
+}
+
+{
+  function red() {
+    console.log("红灯 3s");
+  }
+  function green() {
+    console.log("绿灯 1s");
+  }
+  function yellow() {
+    console.log("黄灯 2s");
+  }
+
+  /**
+   * ### 循环打印红黄绿
+   * 下面来看一道比较典型的问题，通过这个问题来对比几种异步编程方法：**红灯 3s 亮一次，绿灯 1s 亮一次，黄灯 2s 亮一次；如何让三个灯不断交替重复亮灯？**
+   * @param {*} timer
+   * @param {*} light
+   * @returns
+   */
+  const task = (timer, light) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        this[light]();
+        resolve();
+      }, timer);
+    });
+  };
+
+  // const step = () =>
+  //   task(3000, "red")
+  //     .then(() => task(1000, "green"))
+  //     .then(() => task(2100, "yellow"))
+  //     .then(() => step());
+  const taskRunner = async () => {
+    await task(3000, "red");
+    await task(2000, "green");
+    await task(1000, "yellow");
+    taskRunner();
+  };
+  // taskRunner();
+  for (let i = 0; i < 5; i++) {
+    setTimeout(function () {
+      // console.log(i);
+    }, i * 1000);
+  }
+
+  /**
+   * 有30个小孩儿，编号从1-30，围成一圈依此报数，1、2、3 数到 3 的小孩儿退出这个圈， 然后下一个小孩 重新报数 1、2、3，问最后剩下的那个小孩儿的编号是多少?
+   */
+  let map = new Map();
+  for (let i = 0; i < 30; i++) {
+    map.set(i + 1, i + 1);
+  }
+  let j = 1;
+  const deepFn = () => {
+    for (let [key, value] of map) {
+      if (j === 3) {
+        map.delete(key);
+        j = 1;
+      } else {
+        j++;
+      }
+    }
+    if (map.size > 1) deepFn();
+    else return;
+  };
+  deepFn();
+  console.log(map);
+}
+
+{
+  let imageAsync = (url) => {
+    return new Promise((resolve, reject) => {
+      let img = new Image();
+      img.src = url;
+      img.onload = () => {
+        console.log(`图片请求成功,此处进行通用操作`);
+        resolve(image);
+      };
+      img.onerror = (err) => {
+        console.log(`失败,此处进行失败的通用操作`);
+        reject(err);
+      };
+    });
+  };
+
+  // imageAsync("url")
+  //   .then(() => {
+  //     console.log("加载成功");
+  //   })
+  //   .catch((error) => {
+  //     console.log("加载失败");
+  //   });
+}
+
+{
+  class EventCenter {
+    // 1. 定义事件容器，用来装事件数组
+    constructor() {
+      this.handlers = {};
+    }
+
+    // 2. 添加事件方法，参数：事件名 事件方法
+    addEventListener(type, handler) {
+      // 创建新数组容器
+      if (!this.handlers[type]) {
+        this.handlers[type] = [];
+      }
+      // 存入事件
+      this.handlers[type].push(handler);
+    }
+
+    // 3. 触发事件，参数：事件名 事件参数
+    dispatchEvent(type, params) {
+      // 若没有注册该事件则抛出错误
+      if (!this.handlers[type]) {
+        return new Error("该事件未注册");
+      }
+      // 触发事件
+      this.handlers[type].forEach((handler) => {
+        handler(...params);
+      });
+    }
+
+    // 4. 事件移除，参数：事件名 要删除事件，若无第二个参数则删除该事件的订阅和发布
+    removeEventListener(type, handler) {
+      if (!this.handlers[type]) {
+        return new Error("事件无效");
+      }
+      if (!handler) {
+        // 移除事件
+        delete this.handlers[type];
+      } else {
+        const index = this.handlers[type].findIndex((el) => el === handler);
+        if (index === -1) {
+          return new Error("无该绑定事件");
+        }
+        // 移除事件
+        this.handlers[type].splice(index, 1);
+        if (this.handlers[type].length === 0) {
+          delete this.handlers[type];
+        }
+      }
+    }
+  }
+}
+
+{
+  let count = 0;
+  const fn = (n) => {
+    console.log(`第${++count}次,当前${n}`, `fn(${n - 1}) + fn(${n - 2})`);
+    if (n === 0) return 0;
+    if (n === 1) return 1;
+
+    return fn(n - 1) + fn(n - 2);
+  };
+  // console.log(fn(6));
+
+  function fibonacci(n, current, next) {
+    console.log("n, current, next:", n, current, next);
+    if (n === 0) return 0;
+    if (n === 1) return 1;
+    return fibonacci(n - 1, next, current + next);
+  }
+  console.log(fibonacci(6, 0, 1));
+}
+{
+  function mySetInterval(fn, timeout) {
+    // 控制器，控制定时器是否继续执行
+    var timer = { flag: true };
+    // 设置递归函数，模拟定时器执行。
+    function interval() {
+      if (timer.flag) {
+        fn();
+        setTimeout(interval, timeout);
+      }
+    }
+    // 启动定时器
+    setTimeout(interval, timeout);
+    // 返回控制器
+    return timer;
+  }
+  function red() {
+    console.log("red");
+  }
+  // mySetInterval(red, 2000);
+}
+
+{
+  let timer;
+  const fn = () => {
+    console.log("start", timer);
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(fn, 1000);
+    console.log("end", timer);
+  };
+  // timer = setTimeout(fn, 1000);
+}
+
+{
+  // 实现 jsonp
+  // 动态的加载js文件
+  function addScript(src) {
+    const script = document.createElement("script");
+    script.src = src;
+    script.type = "text/javascript";
+    document.body.appendChild(script);
+  }
+  // addScript("http://xxx.xxx.com/xxx.js?callback=handleRes");
+  // 设置一个全局的callback函数来接收回调结果
+  function handleRes(res) {
+    console.log(res);
+  }
+  // 接口返回的数据格式
+  handleRes({ a: 1, b: 2 });
+}
+
+{
+  /**
+   * 判断对象是否存在循环引用
+   * @param {*} obj
+   * @param {*} parent
+   * @returns
+   */
+  const isCycleObject = (obj, parent) => {
+    const parentArr = parent || [obj];
+    for (let i in obj) {
+      if (typeof obj[i] === "object") {
+        let flag = false;
+        parentArr.forEach((pObj) => {
+          if (pObj === obj[i]) {
+            flag = true;
+          }
+        });
+        if (flag) return true;
+        flag = isCycleObject(obj[i], [...parentArr, obj[i]]);
+        if (flag) return true;
+      }
+    }
+    return false;
+  };
+
+  const a = 1;
+  const b = { a };
+  const c = { b };
+  const o = { d: { a: 3 }, c };
+  o.c.b.aa = a;
+  console.log(isCycleObject(o));
+
+  function clone(target, map = new WeakMap()) {
+    if (typeof target === "object") {
+      let cloneTarget = Array.isArray(target) ? [] : {};
+      if (map.get(target)) return map.get(target);
+      map.set(target, cloneTarget);
+      for (const key in target) {
+        cloneTarget[key] = clone(target[key], map);
+      }
+      return cloneTarget;
+    } else {
+      return target;
+    }
+  }
+  const target = {
+    field1: 1,
+    field2: undefined,
+    field3: {
+      child: "child",
+    },
+    field4: [2, 4, 8],
+  };
+  target.target = target;
+  console.log(clone(target));
 }

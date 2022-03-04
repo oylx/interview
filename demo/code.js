@@ -89,15 +89,15 @@
     let lastTime = Date.now();
 
     return function () {
-      let context = this,
-        args = arguments,
-        nowTime = Date.now();
-
-      // 如果两次时间间隔超过了指定时间，则执行函数。
-      if (nowTime - lastTime >= delay) {
-        lastTime = Date.now();
-        return fn.apply(context, args);
-      }
+      let cd = false;
+      return function () {
+        if (cd) return;
+        fn.call();
+        cd = true;
+        setTimeout(() => {
+          cd = false;
+        }, delay);
+      };
     };
   }
 }
@@ -912,4 +912,137 @@
   };
   target.target = target;
   console.log(clone(target));
+}
+
+{
+  const tree = {
+    name: "root",
+    children: [
+      {
+        name: "c1",
+        children: [
+          {
+            name: "c11",
+            children: [],
+          },
+          {
+            name: "c12",
+            children: [],
+          },
+        ],
+      },
+      {
+        name: "c2",
+        children: [
+          {
+            name: "c21",
+            children: [],
+          },
+          {
+            name: "c22",
+            children: [],
+          },
+        ],
+      },
+    ],
+  };
+
+  // 深度优先的方式遍历 打印 name
+  // ['root', 'c1','c11', 'c12', 'c2', 'c21', 'c22']
+
+  var maxDepth = function (root) {
+    if (!root) return 0;
+    let queue = [root],
+      res = 0;
+    while (queue.length) {
+      let temp = [];
+      for (let i = 0; i < queue.length; i++) {
+        if (queue[i].left) temp.push(queue[i].left);
+        if (queue[i].right) temp.push(queue[i].right);
+      }
+      res += 1;
+      queue = temp;
+    }
+    return res;
+  };
+
+  var minDepth = function (root) {
+    if (!root) return 0;
+    let stack = [root],
+      ans = 0;
+    while (stack.length) {
+      let temp = [];
+      ans++;
+      for (let i = 0; i < stack.length; i++) {
+        if (stack[i].left == null && stack[i].right == null) return ans;
+        if (stack[i].left) temp.push(stack[i].left);
+        if (stack[i].right) temp.push(stack[i].right);
+      }
+      stack = temp;
+    }
+    return ans;
+  };
+}
+
+{
+  const arr = [3, 15, 8, 29, 102, 22];
+  arr.sort((a, b) => {
+    return ("" + a).charCodeAt() - ("" + b).charCodeAt();
+  });
+  console.log(arr);
+}
+{
+  Number.prototype.add = function (v) {
+    return this.valueOf(v) + v;
+  };
+  Number.prototype.minus = function (v) {
+    return this.valueOf(v) - v;
+  };
+  console.log((5).add(3).minus(2));
+}
+
+{
+  const obj = { 1: 222, 2: 123, 5: 888 };
+  let arr = Array.from({ length: 12 }).map((v, _i) => obj[_i] || null);
+}
+
+{
+  const nums1 = [1, 2, 2, 1];
+  const nums2 = [2, 2];
+  const res = nums1.filter((item) => nums2.includes(item));
+}
+{
+  const arr = [1, 2, 3, 4];
+  arr.forEach((val) => {
+    if (val === 2) return;
+    console.log(val);
+  });
+  function fn() {
+    for (let i = 0; i < arr.length; i++) {
+      let val = arr[i];
+      if (val === 2) break;
+      console.log(val);
+    }
+  }
+  fn();
+}
+{
+  const arr = [2, 10, 3, 4, 5, 11, 10, 11, 20];
+  const res = [...new Set(arr)]
+    .sort((a, b) => a - b)
+    .reduce((prev, next) => {
+      const _i = Math.floor(next / 10);
+      if (!prev[_i]) prev[_i] = [];
+      prev[_i].push(next);
+      return prev;
+    }, {});
+  console.log(Object.values(res));
+}
+{
+  const str = "AbC";
+  const res = str.split("").map((v) => {
+    const code = v.charCodeAt();
+    return String.fromCharCode(code >= 97 ? code - 32 : code + 32);
+  });
+  console.log(res);
 }

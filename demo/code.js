@@ -1046,3 +1046,40 @@
   });
   console.log(res);
 }
+
+{
+  class EventEmitter {
+    constructor() {
+      if (!EventEmitter.instance) {
+        EventEmitter.instance = this;
+        this.handleMap = {};
+      }
+      return EventEmitter.instance;
+    }
+    on(eventName, cb) {
+      if (!this.handleMap[eventName]) this.handleMap[eventName] = [];
+      this.handleMap[eventName].push(cb);
+    }
+
+    emit(eventName, ...args) {
+      if (this.handleMap[eventName]) {
+        const handlers = [...this.handleMap[eventName]];
+        handlers.forEach((cb) => cb(...args));
+      }
+    }
+
+    remove(eventName, cb) {
+      const callbacks = this.handleMap[eventName];
+      const index = callbacks.indexOf(cb);
+      if (index !== -1) callbacks.splice(index, 1);
+    }
+
+    once(eventName, cb) {
+      const wrapper = (...args) => {
+        cb(...args);
+        this.remove(eventName, wrapper);
+      };
+      this.on(eventName, wrapper);
+    }
+  }
+}
